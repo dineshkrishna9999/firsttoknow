@@ -1,0 +1,163 @@
+"""Tests for the DevPulse CLI commands."""
+
+from pathlib import Path
+from unittest.mock import patch
+
+from typer.testing import CliRunner
+
+from devpulse.cli import app
+from devpulse.config import DevPulseConfig
+
+runner = CliRunner()
+
+
+def _make_config(tmp_path: Path) -> DevPulseConfig:
+    """Create a config that uses a temp directory."""
+    return DevPulseConfig(config_dir=tmp_path / "devpulse")
+
+
+class TestTrack:
+    """Tests for the track command."""
+
+    def test_track_pypi_package(self, tmp_path: Path) -> None:
+        config = _make_config(tmp_path)
+        with patch("devpulse.cli._config", config):
+            result = runner.invoke(app, ["track", "litellm"])
+        assert result.exit_code == 0
+        assert "litellm" in result.output
+        assert "pypi" in result.output
+
+    def test_track_github_repo(self, tmp_path: Path) -> None:
+        config = _make_config(tmp_path)
+        with patch("devpulse.cli._config", config):
+            result = runner.invoke(app, ["track", "--github", "BerriAI/litellm"])
+        assert result.exit_code == 0
+        assert "BerriAI/litellm" in result.output
+        assert "github" in result.output
+
+    def test_track_topic(self, tmp_path: Path) -> None:
+        config = _make_config(tmp_path)
+        with patch("devpulse.cli._config", config):
+            result = runner.invoke(app, ["track", "--topic", "AI agents"])
+        assert result.exit_code == 0
+        assert "AI agents" in result.output
+        assert "topic" in result.output
+
+    def test_track_duplicate(self, tmp_path: Path) -> None:
+        config = _make_config(tmp_path)
+        with patch("devpulse.cli._config", config):
+            runner.invoke(app, ["track", "litellm"])
+            result = runner.invoke(app, ["track", "litellm"])
+        assert result.exit_code == 0
+        assert "Already tracking" in result.output
+
+    def test_track_with_version(self, tmp_path: Path) -> None:
+        config = _make_config(tmp_path)
+        with patch("devpulse.cli._config", config):
+            result = runner.invoke(app, ["track", "litellm", "--version", "1.40.0"])
+        assert result.exit_code == 0
+        assert config.get_item("litellm") is not None
+        item = config.get_item("litellm")
+        assert item is not None
+        assert item.current_version == "1.40.0"
+
+
+class TestUntrack:
+    """Tests for the untrack command."""
+
+    def test_untrack_existing(self, tmp_path: Path) -> None:
+        config = _make_config(tmp_path)
+        with patch("devpulse.cli._config", config):
+            runner.invoke(app, ["track", "litellm"])
+            result = runner.invoke(app, ["untrack", "litellm"])
+        assert result.exit_code == 0
+        assert "Stopped tracking" in result.output
+
+    def test_untrack_nonexistent(self, tmp_path: Path) -> None:
+        config = _make_config(tmp_path)
+        with patch("devpulse.cli._config", config):
+            result = runner.invoke(app, ["untrack", "doesnt-exist"])
+        assert result.exit_code == 0
+        assert "Not tracking" in result.output
+
+
+class TestList:
+    """Tests for the list command."""
+
+    def test_list_empty(self, tmp_path: Path) -> None:
+        config = _make_config(tmp_path)
+        with patch("devpulse.cli._config", config):
+            result = runner.invoke(app, ["list"])
+        assert result.exit_code == 0
+        assert "No items tracked" in result.output
+
+    def test_list_with_items(self, tmp_path: Path) -> None:
+        config = _make_config(tmp_path)
+        with patch("devpulse.cli._config", config):
+            runner.invoke(app, ["track", "litellm"])
+            runner.invoke(app, ["track", "--topic", "AI agents"])
+            result = runner.invoke(app, ["list"])
+        assert result.exit_code == 0
+        assert "litellm" in result.output
+        assert "AI agents" in result.output
+
+
+class TestConfig:
+    """Tests for config subcommands."""
+
+    def test_config_model_set(self, tmp_path: Path) -> None:
+        config = _make_config(tmp_path)
+        with patch("devpulse.cli._config", config):
+            result = runner.invoke(app, ["config", "model", "gpt-4o"])
+        assert result.exit_code == 0
+        assert "gpt-4o" in result.output
+        assert config.model == "gpt-4o"
+
+    def test_config_show(self, tmp_path: Path) -> None:
+        config = _make_config(tmp_path)
+        with patch("devpulse.cli._config", config):
+            result = runner.invoke(app, ["config", "show"])
+        assert result.exit_code == 0
+        assert "DevPulse" in result.output
+        assert "(not set)" in result.output
+
+    def test_config_show_with_model(self, tmp_path: Path) -> None:
+        config = _make_config(tmp_path)
+        with patch("devpulse.cli._config", config):
+            runner.invoke(app, ["config", "model", "azure/gpt-4.1"])
+            result = runner.invoke(app, ["config", "show"])
+        assert result.exit_code == 0
+        assert "azure/gpt-4.1" in result.output
+
+
+class TestStatus:
+    """Tests for the status command."""
+
+    def test_status_empty(self, tmp_path: Path) -> None:
+        config = _make_config(tmp_path)
+        with patch("devpulse.cli._config", config):
+            result = runner.invoke(app, ["status"])
+        assert result.exit_code == 0
+        assert "DevPulse" in result.output
+        assert "No items tracked" in result.output
+
+
+class TestBrief:
+    """Tests for the brief command."""
+
+    def test_brief_no_model(self, tmp_path: Path) -> None:
+        config = _make_config(tmp_path)
+        with patch("devpulse.cli._config", config), patch.dict("os.environ", {}, clear=True):
+            result = runner.invoke(app, ["brief"])
+        assert result.exit_code == 1
+        assert "No model configured" in result.output
+
+    def test_brief_with_model_flag(self, tmp_path: Path) -> None:
+        config = _make_config(tmp_path)
+        with (
+            patch("devpulse.cli._config", config),
+            patch("devpulse.agents.orchestrator.run_agent", return_value="Test briefing response"),
+        ):
+            result = runner.invoke(app, ["brief", "--model", "gpt-4o"])
+        assert result.exit_code == 0
+        assert "Test briefing response" in result.output
