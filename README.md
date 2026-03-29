@@ -2,7 +2,6 @@
 
 > Your AI-powered tech radar. Track packages, releases, trends — and get briefed like a CTO.
 
-[![CI](https://github.com/dineshkrishna9999/devpulse/actions/workflows/ci.yml/badge.svg)](https://github.com/dineshkrishna9999/devpulse/actions/workflows/ci.yml)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
@@ -20,79 +19,78 @@ LiteLLM shipped a breaking change — you found out from a colleague. Google ADK
 
 ```bash
 # Tell it what you care about
-devpulse track google-adk
 devpulse track litellm
-devpulse track "AI agents"
-
-# Or auto-detect from your project
-devpulse scan
+devpulse track --github BerriAI/litellm
+devpulse track --topic "AI agents"
 
 # Get your personalized briefing
-devpulse brief
+devpulse brief --model gpt-4o
 ```
 
 ```
-📡 DEVPULSE BRIEFING — Mar 29, 2026
-
-🔴 CRITICAL
-├── litellm 1.41.0 → Breaking: Azure auth flow changed
-│   "If you use Azure OpenAI, update your AZURE_API_VERSION..."
-└── google-adk 1.28.0 → New: Multi-agent orchestration
-    "New AgentTeam class lets agents collaborate on tasks..."
-
-🟡 WORTH KNOWING
-├── 🔥 Trending: "hermes-agent" (15K ⭐ this week)
-│   Relevant: uses same ADK pattern as your code
-├── Claude Code shipped hooks + background agents
-└── HN: "AI agent memory" discussion (342 points)
-
-🟢 FYI
-├── pytest 9.0.2 — minor bugfixes
-├── ruff 0.15.0 — new rules for Python 3.13
-└── 3 new repos matching "AI agents" trending today
+╭──────────────────────── 📡 DevPulse Briefing ────────────────────────╮
+│                                                                       │
+│  🔴 CRITICAL                                                         │
+│  ├── litellm 1.41.0 → Breaking: Azure auth flow changed              │
+│  └── google-adk 1.28.0 → New: Multi-agent orchestration              │
+│                                                                       │
+│  🟡 WORTH KNOWING                                                    │
+│  ├── 🔥 Trending: "hermes-agent" (15K ⭐ this week)                   │
+│  └── HN: "AI agent memory" discussion (342 points)                   │
+│                                                                       │
+│  🟢 FYI                                                              │
+│  ├── pytest 9.0.2 — minor bugfixes                                   │
+│  └── 3 new repos matching "AI agents" trending today                 │
+│                                                                       │
+╰───────────────────────────────── model: gpt-4o ──────────────────────╯
 ```
 
 ## Features
 
-- **Track anything** — PyPI packages, GitHub repos, topics, products
-- **Auto-detect dependencies** — scans `pyproject.toml`, `package.json`, `requirements.txt`
-- **AI-powered briefings** — powered by Google ADK + LiteLLM (any LLM works)
+- **Track anything** — PyPI packages, GitHub repos, topics
+- **AI-powered briefings** — powered by Google ADK + LiteLLM
 - **Smart prioritization** — 🔴 Critical / 🟡 Important / 🟢 FYI
 - **Works with any LLM** — Azure OpenAI, OpenAI, Gemini, Claude, Ollama (local)
-- **Works without AI too** — `--no-ai` mode shows raw data, no API key needed
-- **Beautiful terminal output** — powered by Rich
+- **Beautiful terminal output** — powered by Rich + Typer
 
 ## Installation
 
 ```bash
-pip install devpulse
-# or
-uv add devpulse
+# From source (recommended for now)
+git clone https://github.com/dineshkrishna9999/devpulse.git
+cd devpulse
+uv sync
+
+# Then run with
+uv run devpulse --help
 ```
 
 ## Quick Start
 
 ```bash
-# 1. Configure your LLM (optional — works without it too)
-cp .env.example .env
-# Edit .env with your API key
+# 1. Set your LLM model
+devpulse config model gpt-4o
+# or set DEVPULSE_MODEL env var
+# or pass --model flag each time
 
 # 2. Track your stack
-devpulse scan                      # Auto-detect from project files
-devpulse track litellm             # Track a PyPI package
-devpulse track --github owner/repo # Track a GitHub repo
-devpulse track "AI agents"         # Track a topic
+devpulse track litellm                  # PyPI package
+devpulse track --github BerriAI/litellm # GitHub repo
+devpulse track --topic "AI agents"      # Topic
+devpulse track litellm --version 1.40.0 # With current version
 
-# 3. Get briefed
-devpulse brief                     # AI-powered briefing
-devpulse brief --no-ai             # Raw data, no AI
-devpulse brief --json              # JSON output
-devpulse brief --markdown          # Markdown (for notes/blog)
+# 3. See what you're tracking
+devpulse list
 
-# 4. Deep dive
-devpulse explain litellm 1.41.0    # What changed & why it matters
-devpulse trending                  # Trending repos & news
-devpulse content-ideas             # Blog/LinkedIn content ideas
+# 4. Get briefed
+devpulse brief                          # Uses configured model
+devpulse brief --model azure/gpt-4.1   # Override model
+devpulse brief --raw                    # Raw text, no formatting
+
+# 5. Manage
+devpulse untrack litellm                # Stop tracking
+devpulse status                         # Full overview
+devpulse config show                    # Show settings
 ```
 
 ## Supported LLM Providers
@@ -108,45 +106,46 @@ DevPulse uses [LiteLLM](https://github.com/BerriAI/litellm) under the hood, so *
 | Ollama (local) | `ollama/llama3` | None needed! |
 
 ```bash
-devpulse brief --model azure/gpt-4.1
-devpulse brief --model ollama/llama3
+devpulse config model azure/gpt-4.1
+devpulse config model ollama/llama3
 ```
 
 ## Data Sources
 
-DevPulse aggregates from multiple sources:
+The agent fetches from:
 
-- **PyPI** — package releases, changelogs, breaking changes
-- **GitHub** — repo releases, trending repositories
-- **Hacker News** — top stories, relevant discussions
-- **Reddit** — posts from r/programming, r/Python, r/MachineLearning, etc.
+- **PyPI** — package releases, versions, metadata
+- **GitHub** — trending repositories by language
+- **Hacker News** — top stories matching your tracked topics
 
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────┐
-│                    DevPulse CLI                      │
-│              (click + rich terminal)                 │
-└────────────────────┬────────────────────────────────┘
-                     │
-┌────────────────────▼────────────────────────────────┐
-│           ADK Orchestrator Agent                     │
-│         (Google ADK + LiteLLM)                       │
-│                                                      │
-│  Tools: fetch_releases, search_trending,             │
-│         generate_briefing, explain_release,           │
-│         suggest_content_ideas                         │
-└────────────────────┬────────────────────────────────┘
-                     │
-┌────────────────────▼────────────────────────────────┐
-│              Data Sources (httpx)                     │
-│  PyPI API · GitHub API · HN Algolia · Reddit JSON    │
-└────────────────────┬────────────────────────────────┘
-                     │
-┌────────────────────▼────────────────────────────────┐
-│              Local State (~/.config/devpulse/)        │
-│  tracked.json · briefings/ · cache/                  │
-└─────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────┐
+│              DevPulse CLI (Typer)             │
+│          commands → renderer → terminal       │
+└───────────────────┬──────────────────────────┘
+                    │
+┌───────────────────▼──────────────────────────┐
+│         ADK Orchestrator Agent                │
+│        (Google ADK + LiteLLM)                 │
+│                                               │
+│  System prompt defines HOW the agent thinks   │
+│  Tools define WHAT it can do:                 │
+│    • fetch_pypi_releases()                    │
+│    • fetch_github_trending()                  │
+│    • fetch_hackernews_top()                   │
+└───────────────────┬──────────────────────────┘
+                    │
+┌───────────────────▼──────────────────────────┐
+│           External APIs (httpx)               │
+│    PyPI JSON · GitHub Search · HN Algolia     │
+└───────────────────┬──────────────────────────┘
+                    │
+┌───────────────────▼──────────────────────────┐
+│         Local State (~/.devpulse/)            │
+│    config.json · tracked.json                 │
+└──────────────────────────────────────────────┘
 ```
 
 ## Development
@@ -172,25 +171,14 @@ uv run devpulse status
 
 ```
 src/devpulse/
-├── cli.py              # CLI entry point (click)
-├── config.py           # Config & tracked items management
-├── models.py           # Data models (dataclasses)
-├── renderer.py         # Rich terminal output
-├── utils.py            # Shared utilities
-├── sources/            # Data source fetchers
-│   ├── pypi.py         # PyPI releases
-│   ├── github.py       # GitHub releases + trending
-│   ├── hackernews.py   # Hacker News
-│   ├── reddit.py       # Reddit posts
-│   ├── changelog.py    # Changelog parser
-│   └── deps.py         # Local dependency scanner
-└── agents/             # Google ADK agents
-    └── orchestrator.py # AI orchestrator
+├── cli.py              # CLI entry point (Typer)
+├── config.py           # Config & tracked items (~/.devpulse/)
+├── models.py           # Data models (dataclasses + StrEnum)
+├── renderer.py         # Rich terminal output (panels, tables)
+└── agents/
+    ├── tools.py        # Tool functions (PyPI, GitHub, HN fetchers)
+    └── orchestrator.py # ADK agent (system prompt + runner)
 ```
-
-## Contributing
-
-Contributions are welcome! Please open an issue first to discuss what you'd like to change.
 
 ## License
 
