@@ -28,6 +28,7 @@ from firsttoknow.config import FirstToKnowConfig
 from firsttoknow.models import ItemType
 from firsttoknow.renderer import (
     render_briefing,
+    render_briefing_spinner,
     render_error,
     render_scan_results,
     render_status,
@@ -221,7 +222,8 @@ def brief(
     from firsttoknow.agents.agent import run_agent
 
     try:
-        response = run_agent(model=resolved_model, message=message)
+        with render_briefing_spinner() as on_tool_call:
+            response = run_agent(model=resolved_model, message=message, on_tool_call=on_tool_call)
     except Exception as exc:
         render_error(str(exc))
         raise typer.Exit(1) from exc

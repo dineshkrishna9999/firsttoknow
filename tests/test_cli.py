@@ -165,6 +165,7 @@ class TestBrief:
         with (
             patch("firsttoknow.cli._config", config),
             patch("firsttoknow.agents.agent.run_agent", return_value="Test briefing response"),
+            patch("firsttoknow.cli.render_briefing_spinner"),
         ):
             result = runner.invoke(app, ["brief", "--model", "gpt-4o"])
         assert result.exit_code == 0

@@ -19,7 +19,7 @@ from ._tools import FirstToKnowTools
 from .instructions import BRIEFING_INSTRUCTION
 
 if TYPE_CHECKING:
-    from collections.abc import Generator
+    from collections.abc import Callable, Generator
 
 logger = logging.getLogger(__name__)
 
@@ -74,12 +74,18 @@ def _suppress_noisy_output() -> Generator[None]:
             logging.getLogger(name).setLevel(old_levels[name])
 
 
-def run_agent(model: str, message: str) -> str:
+def run_agent(
+    model: str,
+    message: str,
+    on_tool_call: Callable[[str], None] | None = None,
+) -> str:
     """Run the FirstToKnow agent and return its response.
 
     Args:
         model: LiteLLM model string (e.g. "azure/gpt-4.1", "gpt-4o").
         message: The user's message.
+        on_tool_call: Optional callback invoked with the tool name each time
+            the agent calls a tool (e.g. "fetch_pypi_releases").
 
     Returns:
         The agent's text response.
@@ -88,10 +94,14 @@ def run_agent(model: str, message: str) -> str:
         RuntimeError: If the agent fails (auth error, no response, etc).
     """
     with _suppress_noisy_output():
-        return _run_agent_inner(model, message)
+        return _run_agent_inner(model, message, on_tool_call=on_tool_call)
 
 
-def _run_agent_inner(model: str, message: str) -> str:
+def _run_agent_inner(
+    model: str,
+    message: str,
+    on_tool_call: Callable[[str], None] | None = None,
+) -> str:
     """Inner agent runner (called with output suppressed)."""
     llm = LiteLlm(model=model)
     agent = FirstToKnowAgent(llm=llm)
@@ -114,6 +124,8 @@ def _run_agent_inner(model: str, message: str) -> str:
         for event in runner.run(new_message=content, session_id="session", user_id="user"):
             if event.content and event.content.parts:
                 for part in event.content.parts:
+                    if part.function_call and on_tool_call and part.function_call.name:
+                        on_tool_call(part.function_call.name)
                     if part.text:
                         response = part.text
     except Exception as exc:

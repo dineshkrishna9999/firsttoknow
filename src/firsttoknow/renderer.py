@@ -9,6 +9,7 @@ The CLI calls the renderer, the renderer calls Rich.
 
 from __future__ import annotations
 
+from contextlib import contextmanager
 from typing import TYPE_CHECKING
 
 from rich.console import Console
@@ -19,6 +20,8 @@ from rich.text import Text
 from firsttoknow import __version__
 
 if TYPE_CHECKING:
+    from collections.abc import Callable, Generator
+
     from firsttoknow.models import TrackedItem
 
 console = Console()
@@ -105,3 +108,39 @@ def render_scan_results(found: int, added: int, skipped: int, source: str) -> No
 def render_error(message: str) -> None:
     """Display an error message."""
     console.print(f"[red]{message}[/red]")
+
+
+# ──────────────────────────────────────────────
+# Briefing spinner
+# ──────────────────────────────────────────────
+
+_TOOL_STATUS: dict[str, str] = {
+    "fetch_pypi_releases": "Checking PyPI",
+    "fetch_npm_releases": "Checking npm",
+    "check_vulnerabilities": "Scanning for vulnerabilities",
+    "fetch_github_trending": "Fetching GitHub trending repos",
+    "fetch_hackernews_top": "Searching Hacker News",
+    "fetch_devto_articles": "Browsing Dev.to articles",
+    "fetch_reddit_posts": "Checking Reddit",
+}
+
+
+@contextmanager
+def render_briefing_spinner() -> Generator[Callable[[str], None]]:
+    """Show a live spinner during briefing that updates with each tool call.
+
+    Yields a callback that the agent calls with the tool name whenever
+    a tool is invoked. The spinner text updates to show what's happening.
+
+    Usage::
+
+        with render_briefing_spinner() as on_tool_call:
+            response = run_agent(model, message, on_tool_call=on_tool_call)
+    """
+    with console.status("[bold green]Preparing briefing...", spinner="dots") as status:
+
+        def _on_tool_call(tool_name: str) -> None:
+            label = _TOOL_STATUS.get(tool_name, f"Running {tool_name}")
+            status.update(f"[bold green]{label}...")
+
+        yield _on_tool_call
