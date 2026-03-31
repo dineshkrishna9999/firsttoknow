@@ -27,6 +27,7 @@ from firsttoknow import __version__
 from firsttoknow.config import FirstToKnowConfig
 from firsttoknow.models import ItemType
 from firsttoknow.renderer import (
+    render_banner,
     render_briefing,
     render_briefing_spinner,
     render_error,
@@ -60,7 +61,7 @@ _config = FirstToKnowConfig()
 
 def _version_callback(value: bool) -> None:
     if value:
-        typer.echo(f"firsttoknow {__version__}")
+        render_banner(__version__)
         raise typer.Exit
 
 
@@ -273,5 +274,6 @@ def config_show() -> None:
 @app.command()
 def status() -> None:
     """Show FirstToKnow status and tracked items."""
+    render_banner(__version__)
     config_show()
     render_tracked_items(_config.tracked_items)

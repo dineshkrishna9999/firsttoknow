@@ -13,6 +13,7 @@ from contextlib import contextmanager
 from typing import TYPE_CHECKING
 
 from rich.console import Console
+from rich.markdown import Markdown
 from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
@@ -52,9 +53,9 @@ def render_tracked_items(items: list[TrackedItem]) -> None:
 
 
 def render_briefing(response: str, model: str) -> None:
-    """Display an agent briefing response in a rich panel."""
+    """Display an agent briefing response in a rich panel with markdown rendering."""
     panel = Panel(
-        response,
+        Markdown(response, hyperlinks=True),
         title="🔔 FirstToKnow Briefing",
         subtitle=f"model: {model}",
         border_style="green",
@@ -108,6 +109,23 @@ def render_scan_results(found: int, added: int, skipped: int, source: str) -> No
 def render_error(message: str) -> None:
     """Display an error message."""
     console.print(f"[red]{message}[/red]")
+
+
+# ──────────────────────────────────────────────
+# ASCII banner
+# ──────────────────────────────────────────────
+
+_BANNER = """\
+[bold green]
+  ╔═╗╦╦═╗╔═╗╔╦╗╔╦╗╔═╗╦╔═╔╗╔╔═╗╦ ╦
+  ╠╣ ║╠╦╝╚═╗ ║  ║ ║ ║╠╩╗║║║║ ║║║║
+  ╚  ╩╩╚═╚═╝ ╩  ╩ ╚═╝╩ ╩╝╚╝╚═╝╚╩╝[/bold green]"""
+
+
+def render_banner(version: str) -> None:
+    """Display the FirstToKnow ASCII banner with version."""
+    console.print(_BANNER)
+    console.print(f"  [dim]v{version} — Never miss what matters in tech.[/dim]\n")
 
 
 # ──────────────────────────────────────────────

@@ -138,6 +138,15 @@ class TestConfig:
         assert "azure/gpt-4.1" in result.output
 
 
+class TestVersion:
+    """Tests for the --version flag."""
+
+    def test_version_flag(self) -> None:
+        result = runner.invoke(app, ["--version"])
+        assert result.exit_code == 0
+        assert "Never miss what matters" in result.output
+
+
 class TestStatus:
     """Tests for the status command."""
 
