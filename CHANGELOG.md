@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.2.0] - 2026-03-31
+
+### Added
+
+- Dev.to tool: fetch popular articles by tag (`fetch_devto_articles`)
+- Reddit tool: fetch hot posts from any subreddit (`fetch_reddit_posts`)
+- Agent now uses 5 data sources (PyPI, GitHub, Hacker News, Dev.to, Reddit)
+- Structured briefing output with sections: 📦 Package Updates, 🔥 Trending Repos, 📰 News & Discussions, 💡 TL;DR
+- 8 new tests for Dev.to and Reddit tools (89 total)
+
+### Changed
+
+- Rewrote agent instructions for structured, sectioned output
+- Agent now calls at least 3 different tools per briefing
+- README commands now include `uv run` prefix
+
 ## [0.1.0] - 2026-03-31
 
 ### Added

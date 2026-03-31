@@ -129,10 +129,79 @@ class LastToKnowTools:
             logger.warning("HN fetch failed for query '%s': %s", query, exc)
             return json.dumps({"error": f"Failed to fetch HN: {exc}"})
 
+    def fetch_devto_articles(self, tag: str = "python", limit: int = 10) -> str:
+        """Fetch recent popular articles from Dev.to by tag.
+
+        Args:
+            tag: Tag to filter by (e.g. "python", "ai", "machinelearning", "javascript").
+            limit: Maximum number of articles to return (default 10).
+
+        Returns:
+            JSON string with a list of articles (title, url, reactions, comments, published).
+        """
+        params: dict[str, str | int] = {
+            "tag": tag,
+            "top": 7,
+            "per_page": limit,
+        }
+        try:
+            resp = httpx.get("https://dev.to/api/articles", params=params, timeout=_TIMEOUT)
+            resp.raise_for_status()
+            data = resp.json()
+            articles = [
+                {
+                    "title": a["title"],
+                    "url": a["url"],
+                    "reactions": a.get("positive_reactions_count", 0),
+                    "comments": a.get("comments_count", 0),
+                    "published": a.get("readable_publish_date", ""),
+                    "author": a.get("user", {}).get("username", ""),
+                }
+                for a in data[:limit]
+            ]
+            return json.dumps({"articles": articles, "tag": tag})
+        except Exception as exc:
+            logger.warning("Dev.to fetch failed for tag '%s': %s", tag, exc)
+            return json.dumps({"error": f"Failed to fetch Dev.to: {exc}"})
+
+    def fetch_reddit_posts(self, subreddit: str = "programming", limit: int = 10) -> str:
+        """Fetch top posts from a subreddit.
+
+        Args:
+            subreddit: Subreddit name (e.g. "programming", "Python", "MachineLearning").
+            limit: Maximum number of posts to return (default 10).
+
+        Returns:
+            JSON string with a list of posts (title, url, score, comments).
+        """
+        url = f"https://www.reddit.com/r/{subreddit}/hot.json"
+        headers = {"User-Agent": "LastToKnow/0.1"}
+        try:
+            resp = httpx.get(url, headers=headers, params={"limit": limit}, timeout=_TIMEOUT)
+            resp.raise_for_status()
+            data = resp.json()
+            posts = [
+                {
+                    "title": p["data"]["title"],
+                    "url": p["data"].get("url", ""),
+                    "score": p["data"].get("score", 0),
+                    "comments": p["data"].get("num_comments", 0),
+                    "permalink": f"https://reddit.com{p['data']['permalink']}",
+                }
+                for p in data.get("data", {}).get("children", [])
+                if not p["data"].get("stickied", False)
+            ]
+            return json.dumps({"posts": posts[:limit], "subreddit": subreddit})
+        except Exception as exc:
+            logger.warning("Reddit fetch failed for r/%s: %s", subreddit, exc)
+            return json.dumps({"error": f"Failed to fetch Reddit: {exc}"})
+
     def get_tools(self) -> list[FunctionTool]:
         """Return all tools as FunctionTool instances for ADK."""
         return [
             FunctionTool(self.fetch_pypi_releases),
             FunctionTool(self.fetch_github_trending),
             FunctionTool(self.fetch_hackernews_top),
+            FunctionTool(self.fetch_devto_articles),
+            FunctionTool(self.fetch_reddit_posts),
         ]

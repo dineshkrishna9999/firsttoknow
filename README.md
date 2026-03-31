@@ -28,9 +28,9 @@ Dependabot bumps versions but doesn't explain why it matters. daily.dev shows ge
 
 ```bash
 # 30 seconds to set up
-lasttoknow scan                          # Auto-detects deps from your project
-lasttoknow track --topic "AI agents"     # Add topics you care about
-lasttoknow brief --model gpt-4o          # Get your personalized briefing
+uv run lasttoknow scan                          # Auto-detects deps from your project
+uv run lasttoknow track --topic "AI agents"     # Add topics you care about
+uv run lasttoknow brief --model gpt-4o          # Get your personalized briefing
 ```
 
 ```
@@ -90,23 +90,23 @@ That's it. You're no longer the last to know.
 
 ```bash
 # Track / Untrack
-lasttoknow track <name>                 # Track a PyPI package
-lasttoknow track --github owner/repo    # Track a GitHub repo
-lasttoknow track --topic "AI agents"    # Track a topic
-lasttoknow track litellm --version 1.40 # Track with current version
-lasttoknow scan                         # Auto-detect from pyproject.toml
-lasttoknow untrack <name>               # Stop tracking
+uv run lasttoknow track <name>                 # Track a PyPI package
+uv run lasttoknow track --github owner/repo    # Track a GitHub repo
+uv run lasttoknow track --topic "AI agents"    # Track a topic
+uv run lasttoknow track litellm --version 1.40 # Track with current version
+uv run lasttoknow scan                         # Auto-detect from pyproject.toml
+uv run lasttoknow untrack <name>               # Stop tracking
 
 # Briefings
-lasttoknow brief                        # Get your AI briefing
-lasttoknow brief --model azure/gpt-4.1  # Use a specific model
-lasttoknow brief --raw                  # Raw text, no formatting
+uv run lasttoknow brief                        # Get your AI briefing
+uv run lasttoknow brief --model azure/gpt-4.1  # Use a specific model
+uv run lasttoknow brief --raw                  # Raw text, no formatting
 
 # Manage
-lasttoknow list                         # See what you're tracking
-lasttoknow status                       # Full overview
-lasttoknow config model <model>         # Set default LLM
-lasttoknow config show                  # Show settings
+uv run lasttoknow list                         # See what you're tracking
+uv run lasttoknow status                       # Full overview
+uv run lasttoknow config model <model>         # Set default LLM
+uv run lasttoknow config show                  # Show settings
 ```
 
 ## Works With Any LLM
