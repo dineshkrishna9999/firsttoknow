@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 import logging
+import sys
+import threading
+import warnings
 
 from google.adk.agents.llm_agent import LlmAgent
 from google.adk.models.lite_llm import LiteLlm
@@ -35,6 +38,27 @@ class DevPulseAgent(LlmAgent):
         )
 
 
+def _suppress_noisy_output() -> None:
+    """Suppress ADK/LiteLLM background thread tracebacks and warnings."""
+    # Silence loggers
+    for name in ("LiteLLM", "google.adk", "litellm", "httpx"):
+        logging.getLogger(name).setLevel(logging.CRITICAL)
+
+    # Suppress background thread exception tracebacks
+    threading.excepthook = lambda _args: None
+
+    # Suppress warnings (e.g. "App name mismatch detected")
+    warnings.filterwarnings("ignore")
+
+    # Redirect stderr to suppress any remaining noise during the run
+    sys.stderr = open("/dev/null", "w")  # noqa: PTH123, SIM115
+
+
+def _restore_output() -> None:
+    """Restore stderr after suppression."""
+    sys.stderr = sys.__stderr__
+
+
 def run_agent(model: str, message: str) -> str:
     """Run the DevPulse agent and return its response.
 
@@ -48,6 +72,16 @@ def run_agent(model: str, message: str) -> str:
     Raises:
         RuntimeError: If the agent fails (auth error, no response, etc).
     """
+    _suppress_noisy_output()
+
+    try:
+        return _run_agent_inner(model, message)
+    finally:
+        _restore_output()
+
+
+def _run_agent_inner(model: str, message: str) -> str:
+    """Inner agent runner (called with output suppressed)."""
     llm = LiteLlm(model=model)
     agent = DevPulseAgent(llm=llm)
 

@@ -20,6 +20,7 @@ import os
 from typing import Annotated
 
 import typer
+from dotenv import load_dotenv
 
 from devpulse import __version__
 from devpulse.config import DevPulseConfig
@@ -37,6 +38,9 @@ from devpulse.renderer import (
 # ──────────────────────────────────────────────
 # App setup
 # ──────────────────────────────────────────────
+
+# Load .env file if present (API keys, DEVPULSE_MODEL, etc.)
+load_dotenv()
 
 app = typer.Typer(
     name="devpulse",
@@ -193,12 +197,6 @@ def brief(
         parts.append("I'm not tracking anything specific yet — give me general Python/AI trends.")
 
     message = " ".join(parts)
-
-    # Suppress noisy ADK/LiteLLM thread tracebacks — we handle errors ourselves
-    import logging
-
-    logging.getLogger("LiteLLM").setLevel(logging.CRITICAL)
-    logging.getLogger("google.adk").setLevel(logging.CRITICAL)
 
     # Import here to avoid loading ADK/LiteLLM on every CLI invocation
     from devpulse.agents.agent import run_agent
