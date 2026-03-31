@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.4.0] - 2026-03-31
+
+### Added
+
+- **npm package support** — track npm packages (`--npm` flag), scan `package.json`, fetch releases from npm registry
+- **CVE/OSV vulnerability alerts** — check all tracked packages (PyPI + npm) for known security vulnerabilities via [osv.dev](https://osv.dev). Flagged as 🔴 CRITICAL with severity (CRITICAL/HIGH/MEDIUM/LOW) and CVE IDs
+- **Live spinner with dynamic tool status** — animated spinner during briefings shows exactly what the agent is doing in real-time ("Checking PyPI...", "Scanning for vulnerabilities...", "Fetching GitHub trending repos...")
+- `scan` command now detects `package.json` and tracks npm dependencies
+- 8 new tests (122 total)
+
+### Changed
+
+- `scan_project` now returns source file name alongside dependencies (fixes ecosystem detection bug)
+- Deduplicated error handling across all 7 tools into shared `_error_response` helper
+- Rewrote noise suppression as proper context manager (fixes resource leak)
+- Agent instructions updated for npm tools and vulnerability checking
+
 ## [0.3.0] - 2026-03-31
 
 ### Changed
