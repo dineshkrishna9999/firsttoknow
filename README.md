@@ -265,5 +265,6 @@ src/firsttoknow/
 
 <p align="center">
   <b>Stop being the last to know. Start being the first.</b><br>
+  Built by <a href="https://github.com/dineshkrishna9999"><b>Dinesh Karakambaka</b></a><br>
   <a href="https://github.com/dineshkrishna9999/firsttoknow">⭐ Star this repo</a> if you've ever found out about a breaking change from a colleague.
 </p>

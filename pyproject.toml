@@ -18,6 +18,23 @@ classifiers = [
     "Environment :: Console",
     "Topic :: Software Development :: Libraries",
     "Topic :: Software Development :: Quality Assurance",
+    "Topic :: Security",
+    "Topic :: Utilities",
+]
+keywords = [
+    "ai-agent",
+    "developer-tools",
+    "tech-news",
+    "cve-scanner",
+    "vulnerability",
+    "pypi",
+    "npm",
+    "hacker-news",
+    "llm",
+    "cli",
+    "briefing",
+    "security",
+    "package-tracker",
 ]
 dependencies = [
     "typer>=0.15.0",

@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d1117"/>
+      <stop offset="100%" style="stop-color:#161b22"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="640" fill="url(#bg)"/>
+
+  <!-- Terminal window -->
+  <rect x="60" y="40" width="1160" height="560" rx="12" fill="#1c2128" stroke="#30363d" stroke-width="2"/>
+
+  <!-- Title bar -->
+  <rect x="60" y="40" width="1160" height="40" rx="12" fill="#21262d"/>
+  <rect x="60" y="68" width="1160" height="12" fill="#21262d"/>
+  <circle cx="90" cy="60" r="7" fill="#ff5f56"/>
+  <circle cx="114" cy="60" r="7" fill="#ffbd2e"/>
+  <circle cx="138" cy="60" r="7" fill="#27c93f"/>
+  <text x="640" y="65" text-anchor="middle" fill="#8b949e" font-family="monospace" font-size="13">firsttoknow brief</text>
+
+  <!-- Title -->
+  <text x="640" y="125" text-anchor="middle" fill="#f0c674" font-family="monospace" font-size="26" font-weight="bold">FirstToKnow Briefing</text>
+
+  <!-- Package Updates Section -->
+  <text x="120" y="175" fill="#f97583" font-family="monospace" font-size="16" font-weight="bold">Package Updates</text>
+  <text x="140" y="200" fill="#c9d1d9" font-family="monospace" font-size="13">litellm (1.41.0) — Breaking: Azure auth flow changed</text>
+  <text x="140" y="222" fill="#f97583" font-family="monospace" font-size="13">CVE-2024-1234 (HIGH 7.5) — SQL injection in litellm</text>
+
+  <!-- Trending Section -->
+  <text x="120" y="265" fill="#f0c674" font-family="monospace" font-size="16" font-weight="bold">Trending Repos</text>
+  <text x="140" y="290" fill="#c9d1d9" font-family="monospace" font-size="13">openai/codex-plugin-cc (5721 stars) — Codex plugin for Claude Code</text>
+  <text x="140" y="312" fill="#c9d1d9" font-family="monospace" font-size="13">hermes-agent (15K stars this week) — AI agent framework</text>
+
+  <!-- News Section -->
+  <text x="120" y="355" fill="#79c0ff" font-family="monospace" font-size="16" font-weight="bold">News and Discussions</text>
+  <text x="140" y="380" fill="#c9d1d9" font-family="monospace" font-size="13">Claude Code source leaked via npm .map file (1883 pts)</text>
+  <text x="140" y="402" fill="#c9d1d9" font-family="monospace" font-size="13">Claude 3.7 Sonnet: improved coding performance (2127 pts)</text>
+
+  <!-- Divider -->
+  <line x1="120" y1="435" x2="1160" y2="435" stroke="#30363d" stroke-width="1"/>
+
+  <!-- Bottom tagline -->
+  <text x="640" y="475" text-anchor="middle" fill="#58a6ff" font-family="monospace" font-size="22" font-weight="bold">Stop being the last to know.</text>
+  <text x="640" y="505" text-anchor="middle" fill="#58a6ff" font-family="monospace" font-size="22" font-weight="bold">Start being the first.</text>
+
+  <!-- URL -->
+  <text x="640" y="555" text-anchor="middle" fill="#8b949e" font-family="monospace" font-size="14">by Dinesh Karakambaka | github.com/dineshkrishna9999/firsttoknow</text>
+</svg>
