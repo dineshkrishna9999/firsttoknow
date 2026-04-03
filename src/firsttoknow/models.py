@@ -88,33 +88,34 @@ class GuardReport:
 
     @property
     def grade(self) -> str:
-        """Compute a letter grade (A-F) for the guard scan.
+        """Compute a box-office verdict for the guard scan.
 
-        Why a letter grade?
-        ────────────────────
+        Uses Indian box office classification — because code quality
+        deserves the same drama as a Friday release 🎬:
+
+            Blockbuster = no criticals, no warnings (clean as a ₹500cr hit)
+            Superhit    = warnings but no criticals (still a winner)
+            Hit         = 1 critical (one fix and you're golden)
+            Average     = 2-3 criticals (needs work)
+            Flop        = 4-5 criticals (not looking good)
+            Disaster    = 6+ criticals (emergency fix needed)
+
+        Why movie grades?
+        ─────────────────
         Numbers and counts ("3 critical, 2 warnings") require mental math.
-        A letter grade gives instant gut-feel: A = great, F = fix this now.
-        Same reason schools, restaurants, and security audits use grades.
-
-        Why no E? Convention — schools skip E and go D → F. Everyone
-        understands that F means failure, no confusion.
-
-        Grading scale:
-            A = no criticals, no warnings (all clean)
-            B = warnings but no criticals (heads up, not blocking)
-            C = 1 critical (one issue to fix)
-            D = 2-3 criticals (several issues)
-            F = 4+ criticals (serious problems)
+        A movie verdict gives instant gut-feel: Blockbuster = ship it, Disaster = fix it.
         """
         if self.critical_count == 0 and self.warning_count == 0:
-            return "A"
+            return "Blockbuster"
         if self.critical_count == 0:
-            return "B"
+            return "Superhit"
         if self.critical_count == 1:
-            return "C"
+            return "Hit"
         if self.critical_count <= 3:
-            return "D"
-        return "F"
+            return "Average"
+        if self.critical_count <= 5:
+            return "Flop"
+        return "Disaster"
 
 
 @dataclass

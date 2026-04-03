@@ -182,14 +182,15 @@ def render_guard_report(report: GuardReport) -> None:
     # ── Grade + Header ────────────────────────────
     grade = report.grade
     grade_styles = {
-        "A": ("green", "All Clear"),
-        "B": ("yellow", "Warnings Found"),
-        "C": ("red", "Critical Issue"),
-        "D": ("red", "Multiple Issues"),
-        "F": ("bold red", "Serious Problems"),
+        "Blockbuster": ("bold green", "🍿 Clean as a ₹500cr hit!"),
+        "Superhit": ("green", "Minor notes, still a winner"),
+        "Hit": ("yellow", "One fix and you're golden"),
+        "Average": ("red", "Needs work before release"),
+        "Flop": ("red", "Not looking good"),
+        "Disaster": ("bold red", "Emergency fix needed 🚨"),
     }
     color, label = grade_styles.get(grade, ("white", "Unknown"))
-    console.print(f"  [{color}]🛡️  GUARD  {grade}[/{color}]  [dim]— {label}[/dim]")
+    console.print(f"  [{color}]🎬  GUARD  {grade}[/{color}]  [dim]— {label}[/dim]")
 
     console.print()
 
