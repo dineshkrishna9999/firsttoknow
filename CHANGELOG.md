@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.4.1] - 2026-04-03
+
+### Added
+
+- **License change detection** — alerts when a tracked package changes its license between versions (legal risk for commercial use)
+- **Colorized markdown briefing output** with ASCII logo banner
+- **Demo GIF** and real-world screenshots in README
+- **Groq and DeepSeek** added to supported LLM providers in `.env.example`
+- **14 GitHub topics** and PyPI keywords for discoverability
+
+### Changed
+
+- README rewritten with hero GIF, scan/status screenshot, and real-world proof section
+- Social preview image for better link sharing on Twitter/LinkedIn/Slack
+- Author branding ("Built by Dinesh Karakambaka") added to README and social preview
+
 ## [0.4.0] - 2026-03-31
 
 ### Added
