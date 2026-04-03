@@ -43,9 +43,11 @@ class TestParseReviewResponse:
 
     def test_clean_json_array(self) -> None:
         """Perfect JSON array — the happy path."""
-        response = json.dumps([
-            {"title": "Hardcoded API key", "details": "Use env vars", "package": "config.py"},
-        ])
+        response = json.dumps(
+            [
+                {"title": "Hardcoded API key", "details": "Use env vars", "package": "config.py"},
+            ]
+        )
         findings = _parse_review_response(response)
         assert len(findings) == 1
         assert findings[0].title == "Hardcoded API key"
@@ -92,10 +94,12 @@ class TestParseReviewResponse:
         a hallucinated issue would BLOCK the push. That's unacceptable.
         Only deterministic checks (CVEs from OSV) should block pushes.
         """
-        response = json.dumps([
-            {"title": "Issue 1", "details": "Details 1", "package": "a.py"},
-            {"title": "Issue 2", "details": "Details 2", "package": "b.py"},
-        ])
+        response = json.dumps(
+            [
+                {"title": "Issue 1", "details": "Details 1", "package": "a.py"},
+                {"title": "Issue 2", "details": "Details 2", "package": "b.py"},
+            ]
+        )
         findings = _parse_review_response(response)
         assert all(f.severity == Severity.WARNING for f in findings)
 
@@ -107,11 +111,15 @@ class TestParseReviewResponse:
 
     def test_truncates_long_titles_and_details(self) -> None:
         """Guard against LLM returning extremely long text."""
-        response = json.dumps([{
-            "title": "x" * 500,
-            "details": "y" * 500,
-            "package": "test.py",
-        }])
+        response = json.dumps(
+            [
+                {
+                    "title": "x" * 500,
+                    "details": "y" * 500,
+                    "package": "test.py",
+                }
+            ]
+        )
         findings = _parse_review_response(response)
         assert len(findings[0].title) <= 120
         assert len(findings[0].details) <= 300
@@ -148,9 +156,11 @@ class TestReviewDiff:
 
         mock_response = MagicMock()
         mock_response.choices = [MagicMock()]
-        mock_response.choices[0].message.content = json.dumps([
-            {"title": "Hardcoded API key", "details": "Use environment variables", "package": "config.py"},
-        ])
+        mock_response.choices[0].message.content = json.dumps(
+            [
+                {"title": "Hardcoded API key", "details": "Use environment variables", "package": "config.py"},
+            ]
+        )
         mock_litellm.completion.return_value = mock_response
 
         findings = review_diff(tmp_path, "gpt-4o")

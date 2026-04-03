@@ -197,12 +197,7 @@ def _is_transposition(a: str, b: str) -> bool:
     if len(a) != len(b):
         return False
     diffs = [i for i in range(len(a)) if a[i] != b[i]]
-    return (
-        len(diffs) == 2
-        and diffs[1] == diffs[0] + 1
-        and a[diffs[0]] == b[diffs[1]]
-        and a[diffs[1]] == b[diffs[0]]
-    )
+    return len(diffs) == 2 and diffs[1] == diffs[0] + 1 and a[diffs[0]] == b[diffs[1]] and a[diffs[1]] == b[diffs[0]]
 
 
 def _is_one_edit_away(a: str, b: str) -> bool:

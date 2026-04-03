@@ -237,7 +237,9 @@ class FirstToKnowTools:
             "per_page": 10,
         }
         try:
-            resp = httpx.get("https://api.github.com/search/repositories", params=params, headers=_github_headers(), timeout=_TIMEOUT)
+            resp = httpx.get(
+                "https://api.github.com/search/repositories", params=params, headers=_github_headers(), timeout=_TIMEOUT
+            )
             resp.raise_for_status()
             data = resp.json()
             repos = [
@@ -284,10 +286,12 @@ class FirstToKnowTools:
             releases = resp.json()
 
             if not releases:
-                return json.dumps({
-                    "repo": f"{owner}/{repo}",
-                    "message": "No releases found. This repo may use tags instead of GitHub Releases.",
-                })
+                return json.dumps(
+                    {
+                        "repo": f"{owner}/{repo}",
+                        "message": "No releases found. This repo may use tags instead of GitHub Releases.",
+                    }
+                )
 
             latest = releases[0]
             body = latest.get("body", "") or ""
@@ -304,16 +308,18 @@ class FirstToKnowTools:
                 for r in releases
             ]
 
-            return json.dumps({
-                "repo": f"{owner}/{repo}",
-                "latest_tag": _strip_v(latest.get("tag_name", "")),
-                "latest_name": latest.get("name", ""),
-                "published_at": (latest.get("published_at", "") or "")[:10],
-                "prerelease": latest.get("prerelease", False),
-                "body": body,
-                "html_url": latest.get("html_url", ""),
-                "recent_releases": recent,
-            })
+            return json.dumps(
+                {
+                    "repo": f"{owner}/{repo}",
+                    "latest_tag": _strip_v(latest.get("tag_name", "")),
+                    "latest_name": latest.get("name", ""),
+                    "published_at": (latest.get("published_at", "") or "")[:10],
+                    "prerelease": latest.get("prerelease", False),
+                    "body": body,
+                    "html_url": latest.get("html_url", ""),
+                    "recent_releases": recent,
+                }
+            )
         except Exception as exc:
             return _error_response(f"GitHub releases fetch failed for {owner}/{repo}", exc)
 

@@ -571,7 +571,7 @@ def review_diff(path: Path, model: str) -> list[GuardFinding]:
             timeout=30,
         )
 
-        response_text = response.choices[0].message.content or ""
+        response_text = response.choices[0].message.content or ""  # type: ignore[union-attr]
     except Exception as exc:
         logger.warning("AI review failed: %s", exc)
         return [
