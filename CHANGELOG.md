@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.5.0] - 2026-04-03
+
+### Added
+
+- **Guard command** — pre-push dependency security scanner (`firsttoknow guard`)
+  - CVE/vulnerability scanning via [OSV.dev](https://osv.dev) for new dependencies
+  - License change detection between package versions
+  - AI-powered code review of git diff (`--review` flag)
+  - Pre-push git hook integration via pre-commit (`--init` flag)
+  - Movie-themed grading system: Blockbuster → Superhit → Hit → Average → Flop → Disaster
+  - Typosquatting detection for new dependencies (compares against ~100 popular PyPI + npm packages)
+- **GitHub releases tool** — `fetch_github_releases` fetches latest releases and changelogs for tracked GitHub repos
+- **Briefing now covers GitHub repos** — tracked repos get release summaries with changelog highlights
+- `firsttoknow-guard` entry point for use as a pre-commit hook
+- 267 tests (up from 130)
+
+### Changed
+
+- `fetch_github_trending` now uses authenticated GitHub API headers (GITHUB_TOKEN) to avoid rate limits
+- Briefing instruction updated with GitHub Releases section and 9 tools (was 8)
+- CLI `brief` command now includes tracked GitHub repos in agent message
+
+### Fixed
+
+- Removed `pytest` from production dependencies (was accidentally included — now dev-only)
+- Synced package version across pyproject.toml and `__init__.py`
+
 ## [0.4.1] - 2026-04-03
 
 ### Added

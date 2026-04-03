@@ -32,13 +32,13 @@ import httpx
 import litellm
 
 from firsttoknow.models import GuardFinding, GuardReport, Severity
-from firsttoknow.typosquat import check_typosquat
 from firsttoknow.scanner import (
     ScannedDep,
     scan_package_json,
     scan_pyproject,
     scan_requirements,
 )
+from firsttoknow.typosquat import check_typosquat
 
 logger = logging.getLogger(__name__)
 

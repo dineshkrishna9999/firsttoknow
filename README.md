@@ -3,7 +3,7 @@
 ### Because being the first to know isn't luck — it's a system.
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![Tests](https://img.shields.io/badge/tests-130%20passing-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/tests-267%20passing-brightgreen.svg)]()
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -12,7 +12,7 @@
   ╔═╗╦╦═╗╔═╗╔╦╗╔╦╗╔═╗╦╔═╔╗╔╔═╗╦ ╦
   ╠╣ ║╠╦╝╚═╗ ║  ║ ║ ║╠╩╗║║║║ ║║║║
   ╚  ╩╩╚═╚═╝ ╩  ╩ ╚═╝╩ ╩╝╚╝╚═╝╚╩╝
-  v0.4.0 — Never miss what matters in tech.
+  v0.5.0 — Never miss what matters in tech.
 ```
 
 <p align="center">
@@ -78,6 +78,8 @@ uv run firsttoknow brief --model gpt-4o          # Get your personalized briefin
 | Tracks YOUR stack | ✅ | ✅ | ❌ | ❌ |
 | Explains what changed & why | ✅ | ❌ | ❌ | ❌ |
 | CVE/vulnerability scanning | ✅ | ❌ | ❌ | ❌ |
+| Pre-push dependency guard | ✅ | ❌ | ❌ | ❌ |
+| Typosquatting detection | ✅ | ❌ | ❌ | ❌ |
 | Trending repos & HN/Reddit | ✅ | ❌ | ✅ | ❌ |
 | AI-prioritized (🔴 🟡 🟢) | ✅ | ❌ | ❌ | ❌ |
 | Works with any LLM | ✅ | N/A | N/A | N/A |
@@ -115,6 +117,36 @@ No frozen terminal. The briefing shows what's happening in real-time:
 
 ### 🎨 Rich Markdown Output
 Briefings render with styled headings, **bold text**, bullet lists, and clickable terminal hyperlinks. Not raw markdown — actual formatted terminal output.
+
+### 🎬 Guard — Pre-Push Dependency Scanner
+Catch supply-chain risks **before** you push. Guard scans your git diff for new dependencies and checks each one:
+
+```bash
+uv run firsttoknow guard                          # Scan new deps for risks
+uv run firsttoknow guard --review --model gpt-4o  # + AI code review of your diff
+uv run firsttoknow guard --init                   # Install as automatic pre-push hook
+```
+
+```
+  🎬  GUARD  Blockbuster  — OG — clean code, power push 🚀
+
+  ✅ flask  OK
+     No known vulnerabilities
+
+  ⚠️  reqeusts  WARNING
+     Possible typosquat of 'requests' — character swap (transposition)
+
+  ──────────────────────────────────────────────────
+  1 passed · 1 warning
+```
+
+**What Guard checks:**
+- **CVE vulnerabilities** — queries [OSV.dev](https://osv.dev) for every new dependency
+- **License changes** — detects MIT → GPL switches between package versions
+- **Typosquatting** — flags names suspiciously similar to popular packages (`reqeusts` → `requests`)
+- **AI code review** — optional LLM-powered review of your diff (`--review`)
+
+**Movie-themed grading:** Blockbuster (clean) → Superhit → Hit → Average → Flop → Disaster
 
 ## Get Started in 60 Seconds
 
@@ -162,6 +194,11 @@ uv run firsttoknow untrack <name>               # Stop tracking
 uv run firsttoknow brief                        # Get your AI briefing
 uv run firsttoknow brief --model azure/gpt-4.1  # Use a specific model
 uv run firsttoknow brief --raw                  # Raw text, no formatting
+
+# Guard (pre-push security)
+uv run firsttoknow guard                        # Scan new deps for risks
+uv run firsttoknow guard --review -m gpt-4o     # + AI code review
+uv run firsttoknow guard --init                 # Install as pre-push hook
 
 # Manage
 uv run firsttoknow list                         # See what you're tracking
@@ -239,7 +276,7 @@ uv run poe test         # Just tests
 uv run poe fmt          # Format code
 ```
 
-130 tests. Zero tolerance for regressions.
+267 tests. Zero tolerance for regressions.
 
 ### Project Structure
 
@@ -247,12 +284,15 @@ uv run poe fmt          # Format code
 src/firsttoknow/
 ├── cli.py              # CLI commands (Typer)
 ├── config.py           # Config & persistence (~/.firsttoknow/)
-├── models.py           # Data models (TrackedItem, ItemType)
-├── renderer.py         # Rich terminal output (Markdown, banners, spinners)
+├── guard.py            # Pre-push dependency scanner (CVE, license, AI review)
+├── hooks.py            # Pre-commit hook entry point
+├── models.py           # Data models (TrackedItem, GuardReport, Severity)
+├── renderer.py         # Rich terminal output (Markdown, banners, spinners, guard report)
 ├── scanner.py          # Dependency scanner (pyproject.toml, requirements.txt, package.json)
+├── typosquat.py        # Typosquatting detection (compares against popular packages)
 └── agents/
     ├── agent.py        # ADK agent + runner (with tool-call callbacks)
-    ├── _tools.py       # 7 API tools (PyPI, npm, GitHub, HN, Dev.to, Reddit, OSV)
+    ├── _tools.py       # 9 API tools (PyPI, npm, GitHub, HN, Dev.to, Reddit, OSV)
     └── instructions/
         └── briefing.py # System prompt — the brain
 ```

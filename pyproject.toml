@@ -1,6 +1,6 @@
 [project]
 name = "firsttoknow"
-version = "0.4.1"
+version = "0.5.0"
 description = "🔔 Never miss what matters in tech. Track packages, releases, trends — and get briefed like a CTO."
 readme = "README.md"
 license = { text = "MIT" }

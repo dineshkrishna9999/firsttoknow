@@ -91,8 +91,7 @@ class TestItemType:
 def _finding(severity: Severity, n: int = 1) -> list[GuardFinding]:
     """Helper: create n findings with given severity."""
     return [
-        GuardFinding(package=f"pkg-{i}", ecosystem="pypi", severity=severity, title=f"finding {i}")
-        for i in range(n)
+        GuardFinding(package=f"pkg-{i}", ecosystem="pypi", severity=severity, title=f"finding {i}") for i in range(n)
     ]
 
 
@@ -120,9 +119,7 @@ class TestGuardReportGrade:
 
     def test_grade_superhit_warnings_and_info(self) -> None:
         """Mix of warnings and info, no criticals → still Superhit."""
-        report = GuardReport(
-            findings=_finding(Severity.WARNING, 1) + _finding(Severity.INFO, 2)
-        )
+        report = GuardReport(findings=_finding(Severity.WARNING, 1) + _finding(Severity.INFO, 2))
         assert report.grade == "Superhit"
 
     def test_grade_hit_one_critical(self) -> None:
@@ -163,10 +160,6 @@ class TestGuardReportGrade:
     def test_grade_with_mixed_severities(self) -> None:
         """Criticals + warnings + info — grade based on criticals only."""
         report = GuardReport(
-            findings=(
-                _finding(Severity.CRITICAL, 2)
-                + _finding(Severity.WARNING, 3)
-                + _finding(Severity.INFO, 5)
-            )
+            findings=(_finding(Severity.CRITICAL, 2) + _finding(Severity.WARNING, 3) + _finding(Severity.INFO, 5))
         )
         assert report.grade == "Average"  # 2 criticals → Average
