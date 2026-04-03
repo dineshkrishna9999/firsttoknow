@@ -179,11 +179,17 @@ def render_guard_report(report: GuardReport) -> None:
 
     console.print()  # breathing room
 
-    # ── Header ────────────────────────────────
-    if report.passed:
-        console.print("[bold green]  🛡️  GUARD PASSED[/bold green]")
-    else:
-        console.print("[bold red]  🛡️  GUARD FAILED[/bold red]")
+    # ── Grade + Header ────────────────────────────
+    grade = report.grade
+    grade_styles = {
+        "A": ("green", "All Clear"),
+        "B": ("yellow", "Warnings Found"),
+        "C": ("red", "Critical Issue"),
+        "D": ("red", "Multiple Issues"),
+        "F": ("bold red", "Serious Problems"),
+    }
+    color, label = grade_styles.get(grade, ("white", "Unknown"))
+    console.print(f"  [{color}]🛡️  GUARD  {grade}[/{color}]  [dim]— {label}[/dim]")
 
     console.print()
 

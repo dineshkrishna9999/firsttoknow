@@ -86,6 +86,36 @@ class GuardReport:
     def info_count(self) -> int:
         return sum(1 for f in self.findings if f.severity == Severity.INFO)
 
+    @property
+    def grade(self) -> str:
+        """Compute a letter grade (A-F) for the guard scan.
+
+        Why a letter grade?
+        ────────────────────
+        Numbers and counts ("3 critical, 2 warnings") require mental math.
+        A letter grade gives instant gut-feel: A = great, F = fix this now.
+        Same reason schools, restaurants, and security audits use grades.
+
+        Why no E? Convention — schools skip E and go D → F. Everyone
+        understands that F means failure, no confusion.
+
+        Grading scale:
+            A = no criticals, no warnings (all clean)
+            B = warnings but no criticals (heads up, not blocking)
+            C = 1 critical (one issue to fix)
+            D = 2-3 criticals (several issues)
+            F = 4+ criticals (serious problems)
+        """
+        if self.critical_count == 0 and self.warning_count == 0:
+            return "A"
+        if self.critical_count == 0:
+            return "B"
+        if self.critical_count == 1:
+            return "C"
+        if self.critical_count <= 3:
+            return "D"
+        return "F"
+
 
 @dataclass
 class TrackedItem:
