@@ -417,6 +417,60 @@ class TestFetchRedditPosts:
         assert "Rate limited" in result["error"]
 
 
+class TestFetchStackoverflowQuestions:
+    """Tests for the Stack Overflow question fetcher."""
+
+    def setup_method(self) -> None:
+        self.tools = FirstToKnowTools()
+
+    def test_fetch_stackoverflow_questions_returns_expected_keys(self) -> None:
+        mock_data = {
+            "items": [
+                {
+                    "title": "How do I use asyncio with httpx?",
+                    "link": "https://stackoverflow.com/questions/12345678",
+                    "score": 42,
+                    "answer_count": 3,
+                    "tags": ["python", "asyncio", "httpx"],
+                },
+            ],
+        }
+        with patch("firsttoknow.agents._tools.httpx.get", return_value=_mock_response(mock_data)):
+            result = json.loads(self.tools.fetch_stackoverflow_questions("python"))
+
+        assert "questions" in result
+        assert result["tag"] == "python"
+        assert isinstance(result["questions"], list)
+        assert result["questions"][0]["title"] == "How do I use asyncio with httpx?"
+        assert result["questions"][0]["score"] == 42
+        assert result["questions"][0]["answers"] == 3
+        assert result["questions"][0]["url"] == "https://stackoverflow.com/questions/12345678"
+
+    def test_fetch_stackoverflow_questions_returns_error_on_failure(self) -> None:
+        with patch("firsttoknow.agents._tools.httpx.get", side_effect=Exception("timeout")):
+            result = json.loads(self.tools.fetch_stackoverflow_questions("python"))
+
+        assert "error" in result
+        assert "timeout" in result["error"]
+
+    def test_fetch_stackoverflow_questions_passes_tag_in_params(self) -> None:
+        mock_data = {"items": []}
+        with patch("firsttoknow.agents._tools.httpx.get", return_value=_mock_response(mock_data)) as mock_get:
+            self.tools.fetch_stackoverflow_questions("llm", limit=5)
+
+        call_params = mock_get.call_args[1]["params"]
+        assert call_params["tagged"] == "llm"
+        assert call_params["pagesize"] == 5
+
+    def test_fetch_stackoverflow_questions_empty_items(self) -> None:
+        mock_data = {"items": []}
+        with patch("firsttoknow.agents._tools.httpx.get", return_value=_mock_response(mock_data)):
+            result = json.loads(self.tools.fetch_stackoverflow_questions("obscure-tag"))
+
+        assert result["questions"] == []
+        assert result["tag"] == "obscure-tag"
+
+
 class TestCheckVulnerabilities:
     """Tests for the OSV vulnerability checker."""
 

@@ -23,6 +23,7 @@ They click links only to go deeper. Your summary IS the value.
 | `fetch_hackernews_top` | Search Hacker News for top stories on a topic |
 | `fetch_devto_articles` | Fetch popular Dev.to articles by tag |
 | `fetch_reddit_posts` | Fetch hot posts from any subreddit |
+| `fetch_stackoverflow_questions` | Fetch hot Stack Overflow questions by tag |
 
 # ── How to run a briefing ───────────────────────────────────────
 
@@ -47,6 +48,9 @@ AND for general terms like "AI", "Python", "LLM" if the user tracks those areas.
 6. **Reddit** — call `fetch_reddit_posts` for relevant subreddits \
 (e.g. "Python", "MachineLearning", "LocalLLaMA", "programming"). \
 Surface posts with high scores.
+7. **Stack Overflow** — call `fetch_stackoverflow_questions` for relevant tags \
+(e.g. "python", "ai", "llm"). Surface highly-scored questions and those with \
+many answers — these signal active community problems your user may face too.
 
 Always call **at least 3 different tools** so the briefing covers multiple angles.
 

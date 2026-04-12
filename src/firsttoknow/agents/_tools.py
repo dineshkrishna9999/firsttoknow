@@ -420,6 +420,49 @@ class FirstToKnowTools:
         except Exception as exc:
             return _error_response(f"Reddit fetch failed for r/{subreddit}", exc)
 
+    def fetch_stackoverflow_questions(self, tag: str = "python", limit: int = 10) -> str:
+        """Fetch hot questions from Stack Overflow by tag.
+
+        Args:
+            tag: Tag to filter by (e.g. "python", "ai", "llm", "javascript").
+            limit: Maximum number of questions to return (default 10).
+
+        Returns:
+            JSON string with a list of questions (title, url, score, answers).
+
+        Why Stack Exchange API v2.3?
+        ────────────────────────────
+        It's the only official Stack Overflow API — no auth required for read
+        access at reasonable rate limits (300 requests/day without a key, 10k
+        with one). filter=default returns title, link, score, and answer_count
+        which is exactly what the briefing needs.
+        """
+        url = "https://api.stackexchange.com/2.3/questions"
+        params: dict[str, str | int] = {
+            "order": "desc",
+            "sort": "hot",
+            "tagged": tag,
+            "site": "stackoverflow",
+            "pagesize": limit,
+        }
+        try:
+            resp = httpx.get(url, params=params, timeout=_TIMEOUT)
+            resp.raise_for_status()
+            data = resp.json()
+            questions = [
+                {
+                    "title": q["title"],
+                    "url": q["link"],
+                    "score": q.get("score", 0),
+                    "answers": q.get("answer_count", 0),
+                    "tags": q.get("tags", []),
+                }
+                for q in data.get("items", [])[:limit]
+            ]
+            return json.dumps({"questions": questions, "tag": tag})
+        except Exception as exc:
+            return _error_response(f"Stack Overflow fetch failed for tag '{tag}'", exc)
+
     def check_vulnerabilities(self, package_name: str, ecosystem: str = "pypi") -> str:
         """Check a package for known security vulnerabilities via OSV.dev.
 
@@ -627,4 +670,5 @@ class FirstToKnowTools:
             FunctionTool(self.fetch_hackernews_top),
             FunctionTool(self.fetch_devto_articles),
             FunctionTool(self.fetch_reddit_posts),
+            FunctionTool(self.fetch_stackoverflow_questions),
         ]
